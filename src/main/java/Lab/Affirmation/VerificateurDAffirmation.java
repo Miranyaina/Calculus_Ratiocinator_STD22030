@@ -1,25 +1,39 @@
 package Lab.Affirmation;
 
-public class VerificateurDAffirmation {
-    // Méthode pour une affirmation sans contexte de vérité ou de mensonge
-    public static String uneAffirmation(Affirmation affirmation) {
-        return "Je ne sais pas";
-    }
+import java.util.List;
 
-    // Méthode pour une affirmation avec contexte de vérité
-    public static String uneAffirmation(Affirmation affirmation, Verite verite) {
-        if (affirmation.getAffirmationInput().equals(verite.getAffirmationInput())) {
+public class VerificateurDAffirmation {
+
+    public static String uneAffirmation(Affirmation affirmation, List<Affirmation> affirmations) {
+        if (et(affirmations).equals("Vrai")) {
             return "Vrai";
         }
         return "Je ne sais pas";
     }
 
-    // Méthode pour une affirmation avec contexte de mensonge
-    public static String uneAffirmation(Affirmation affirmation, Mensonge mensonge) {
-        if (affirmation.getAffirmationInput().equals(mensonge.getAffirmationInput())) {
-            return "Faux";
+    public static String et(List<Affirmation> affirmations) {
+        for (Affirmation affirmation : affirmations) {
+            if (affirmation instanceof Mensonge) {
+                return "Faux";
+            }
         }
-        return "Je ne sais pas";
+        return "Vrai";
     }
 
+    public static String ou(List<Affirmation> affirmations) {
+        for (Affirmation affirmation : affirmations) {
+            if (affirmation instanceof Verite) {
+                return "Vrai";
+            }
+        }
+        return "Faux";
+    }
+
+    public static String donc(List<Affirmation> affirmations) {
+        boolean firstIsTruth = affirmations.size() > 0 && affirmations.get(0) instanceof Verite;
+        boolean containsLieAfterFirstTruth = affirmations.stream()
+                .skip(1)
+                .anyMatch(affirmation -> affirmation instanceof Mensonge);
+        return firstIsTruth && !containsLieAfterFirstTruth ? "Vrai" : "Faux";
+    }
 }
